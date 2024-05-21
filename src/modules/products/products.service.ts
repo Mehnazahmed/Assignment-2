@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { TProduct } from "./products.interface";
 import { Product } from "./products.model";
 
@@ -17,8 +18,29 @@ const getSingleProductFromDB = async (id: string) => {
   return result;
 };
 
+const updateProductInDB = async (
+  productId: string,
+  productData: Partial<TProduct>
+): Promise<TProduct | null> => {
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Error("Invalid product ID");
+  }
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      productData,
+      { new: true, runValidators: true }
+    );
+    return updatedProduct;
+  } catch (error: any) {
+    throw new Error(`Unable to update product: ${error.message}`);
+  }
+};
+
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
+  updateProductInDB,
 };
