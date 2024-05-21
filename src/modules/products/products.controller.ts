@@ -21,19 +21,32 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-const getAllProducts = async (req: Request, res: Response) => {
+//get products by search query or normal query to get all
+const getProducts = async (req: Request, res: Response) => {
   try {
-    const result = await ProductServices.getAllProductsFromDB();
+    const { searchTerm } = req.query;
+
+    const products = await ProductServices.getProductsFromDB(
+      searchTerm as string
+    );
 
     res.status(200).json({
       success: true,
-      message: "Products fetched successfully!",
-      data: result,
+      message: searchTerm
+        ? `Products matching search term ${searchTerm} fetched successfully!`
+        : "Products fetched successfully!",
+      data: products,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message || error,
+    });
   }
 };
+
+//get product by id
 
 const getSingleProduct = async (req: Request, res: Response) => {
   try {
@@ -59,6 +72,8 @@ const getSingleProduct = async (req: Request, res: Response) => {
     });
   }
 };
+
+//update product
 
 const updateProduct = async (req: Request, res: Response) => {
   try {
@@ -92,6 +107,7 @@ const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
+//delete product
 const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
@@ -122,7 +138,7 @@ const deleteProduct = async (req: Request, res: Response) => {
 
 export const ProductControllers = {
   createProduct,
-  getAllProducts,
+  getProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,

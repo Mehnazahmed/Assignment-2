@@ -8,9 +8,28 @@ const createProductIntoDB = async (productData: TProduct) => {
   return result;
 };
 
-const getAllProductsFromDB = async () => {
-  const result = await Product.find();
-  return result;
+const getProductsFromDB = async (searchTerm?: string) => {
+  const query = searchTerm
+    ? {
+        $or: [
+          { name: { $regex: searchTerm, $options: "i" } },
+          { description: { $regex: searchTerm, $options: "i" } },
+          { category: { $regex: searchTerm, $options: "i" } },
+          { tags: { $regex: searchTerm, $options: "i" } },
+        ],
+      }
+    : {};
+
+  try {
+    const products = await Product.find(query);
+
+    if (products.length === 0) {
+      throw new Error("No products match the search term");
+    }
+    return products;
+  } catch (error: any) {
+    throw new Error(`Unable to fetch products: ${error.message}`);
+  }
 };
 
 const getSingleProductFromDB = async (id: string) => {
@@ -53,7 +72,7 @@ const deleteProductFromDB = async (productId: string): Promise<boolean> => {
 
 export const ProductServices = {
   createProductIntoDB,
-  getAllProductsFromDB,
+  getProductsFromDB,
   getSingleProductFromDB,
   updateProductInDB,
   deleteProductFromDB,
