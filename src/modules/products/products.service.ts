@@ -1,19 +1,24 @@
-export type TProductVariant = {
-  type: string;
-  value: string;
+import { TProduct } from "./products.interface";
+import { Product } from "./products.model";
+
+const createProductIntoDB = async (productData: TProduct) => {
+  const result = await Product.create(productData);
+
+  return result;
 };
 
-export type TProductInventory = {
-  quantity: number;
-  inStock: boolean;
+const getAllProductsFromDB = async () => {
+  const result = await Product.find();
+  return result;
 };
 
-export type TProduct = {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  tags: string[];
-  variants: TProductVariant[];
-  inventory: TProductInventory;
+const getSingleProductFromDB = async (id: string) => {
+  const result = await Product.findById(id);
+  return result;
+};
+
+export const ProductServices = {
+  createProductIntoDB,
+  getAllProductsFromDB,
+  getSingleProductFromDB,
 };
