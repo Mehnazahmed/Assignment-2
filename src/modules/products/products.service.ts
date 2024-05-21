@@ -38,9 +38,23 @@ const updateProductInDB = async (
   }
 };
 
+const deleteProductFromDB = async (productId: string): Promise<boolean> => {
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Error("Invalid product ID");
+  }
+
+  try {
+    const result = await Product.findByIdAndDelete(productId);
+    return result !== null;
+  } catch (error: any) {
+    throw new Error(`Unable to delete product: ${error.message}`);
+  }
+};
+
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
   updateProductInDB,
+  deleteProductFromDB,
 };

@@ -10,5 +10,6 @@ app.use(cors());
 
 app.use("/api/products", ProductRoutes);
 app.put("/api/products/:productId", ProductControllers.updateProduct);
+app.delete("/api/products/:productId", ProductControllers.deleteProduct);
 
 export default app;
