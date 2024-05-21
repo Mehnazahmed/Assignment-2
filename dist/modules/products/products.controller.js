@@ -29,23 +29,39 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 });
-const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+//get products by search query or normal query to get all
+const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield products_service_1.ProductServices.getAllProductsFromDB();
+        const { searchTerm } = req.query;
+        const products = yield products_service_1.ProductServices.getProductsFromDB(searchTerm);
         res.status(200).json({
             success: true,
-            message: "Products fetched successfully!",
-            data: result,
+            message: searchTerm
+                ? `Products matching search term ${searchTerm} fetched successfully!`
+                : "Products fetched successfully!",
+            data: products,
         });
     }
     catch (error) {
-        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message || error,
+        });
     }
 });
+//get product by id
 const getSingleProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { productId } = req.params;
         const result = yield products_service_1.ProductServices.getSingleProductFromDB(productId);
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+                data: null,
+            });
+        }
         res.status(200).json({
             success: true,
             message: "Product fetched successfully!",
@@ -60,8 +76,63 @@ const getSingleProduct = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
 });
+//update product
+const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        const productData = req.body.product;
+        const updatedProduct = yield products_service_1.ProductServices.updateProductInDB(productId, productData);
+        if (!updatedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+                data: null,
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Product updated successfully!",
+            data: updatedProduct,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message || error,
+        });
+    }
+});
+//delete product
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        const deletedProduct = yield products_service_1.ProductServices.deleteProductFromDB(productId);
+        if (!deletedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product deleted successfully!",
+                data: null,
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Product deleted successfully!",
+            data: deletedProduct,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message || error,
+        });
+    }
+});
 exports.ProductControllers = {
     createProduct,
-    getAllProducts,
+    getProducts,
     getSingleProduct,
+    updateProduct,
+    deleteProduct,
 };
