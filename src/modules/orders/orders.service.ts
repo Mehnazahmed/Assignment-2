@@ -22,12 +22,10 @@ const createOrderIntoDB = async (orderData: TOrder) => {
     // Update the inventory
     product.inventory.quantity -= orderData.quantity;
     product.inventory.inStock = product.inventory.quantity > 0; // Update inStock based on quantity
-    console.log("Updated Inventory before saving:", product.inventory);
 
     // Save the updated product
     await product.save();
     const updatedProduct = await Product.findById(orderData.productId);
-    console.log("Product after save:", updatedProduct);
 
     return result;
   } catch (error: any) {
