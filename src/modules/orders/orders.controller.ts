@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { OrderServices } from "./orders.service";
+import { TOrder } from "./orders.interface";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
-    const { order: orderData } = req.body;
+    const orderData: TOrder = req.body;
 
     const result = await OrderServices.createOrderIntoDB(orderData);
 
@@ -13,11 +14,18 @@ const createOrder = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "something went wrong",
-      error,
-    });
+    if (error.message === "Insufficient stock") {
+      res.status(400).json({
+        success: false,
+        message: "Insufficient stock",
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: error.message || "Something went wrong",
+        error,
+      });
+    }
   }
 };
 
@@ -29,7 +37,9 @@ const getOrders = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Orders fetched successfully!",
+      message: email
+        ? "Orders fetched successfully for user email!"
+        : "Orders fetched successfully!",
       data: orders,
     });
   } catch (error: any) {
