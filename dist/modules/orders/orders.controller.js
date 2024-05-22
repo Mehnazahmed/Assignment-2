@@ -13,7 +13,7 @@ exports.OrdersControllers = void 0;
 const orders_service_1 = require("./orders.service");
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { order: orderData } = req.body;
+        const orderData = req.body;
         const result = yield orders_service_1.OrderServices.createOrderIntoDB(orderData);
         res.status(200).json({
             success: true,
@@ -22,11 +22,19 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message || "something went wrong",
-            error,
-        });
+        if (error.message === "Insufficient stock") {
+            res.status(400).json({
+                success: false,
+                message: "Insufficient stock",
+            });
+        }
+        else {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Something went wrong",
+                error,
+            });
+        }
     }
 });
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,7 +43,9 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const orders = yield orders_service_1.OrderServices.getOrdersFromDB(email);
         res.status(200).json({
             success: true,
-            message: "Orders fetched successfully!",
+            message: email
+                ? "Orders fetched successfully for user email!"
+                : "Orders fetched successfully!",
             data: orders,
         });
     }
