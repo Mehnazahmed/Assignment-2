@@ -25,7 +25,6 @@ const createOrderIntoDB = async (orderData: TOrder) => {
 
     // Save the updated product
     await product.save();
-    const updatedProduct = await Product.findById(orderData.productId);
 
     return result;
   } catch (error: any) {

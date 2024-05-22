@@ -29,11 +29,8 @@ const createOrderIntoDB = (orderData) => __awaiter(void 0, void 0, void 0, funct
         // Update the inventory
         product.inventory.quantity -= orderData.quantity;
         product.inventory.inStock = product.inventory.quantity > 0; // Update inStock based on quantity
-        console.log("Updated Inventory before saving:", product.inventory);
         // Save the updated product
         yield product.save();
-        const updatedProduct = yield products_model_1.Product.findById(orderData.productId);
-        console.log("Product after save:", updatedProduct);
         return result;
     }
     catch (error) {
