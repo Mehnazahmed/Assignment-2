@@ -8,6 +8,6 @@ const express_1 = __importDefault(require("express"));
 const orders_controller_1 = require("./orders.controller");
 const router = express_1.default.Router();
 //order routes
-router.post("/create-order", orders_controller_1.OrdersControllers.createOrder);
+router.post("/", orders_controller_1.OrdersControllers.createOrder);
 router.get("/", orders_controller_1.OrdersControllers.getOrders);
 exports.OrderRoutes = router;
